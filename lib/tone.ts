@@ -9,18 +9,18 @@
 import { RoastStyle } from "@/types";
 
 export interface ToneStrings {
-  // ── Left page — form chrome ──────────────────────────────
-  usernameLabel: string;      // label above the input field
+  // ── Form chrome ──────────────────────────────────────────
   usernameHint: string;       // small note shown while input is empty
-  stylePickerLabel: string;   // heading above the style radio list
+  submitLabel: string;        // the primary action button text
   loadingText: string;        // text shown next to the scribble dots
   waitingNote: string;        // note shown next to the disabled submit button
 
-  // ── Right page ───────────────────────────────────────────
-  placeholderTitle: string;   // main text in the empty right page
+  // ── Result / empty states ────────────────────────────────
+  placeholderTitle: string;   // main text in the empty result area
   placeholderHint: string;    // small annotation below placeholder
   loadingTitle: string;       // replaces placeholderTitle while loading
   resultLabel: string;        // annotation above the result card
+  exclaim: string;            // the marker scribble on the result card ("BOOM.")
 
   // ── Result card ──────────────────────────────────────────
   copyLabel: string;          // copy button — idle state
@@ -42,16 +42,16 @@ const TONES: Record<RoastStyle, ToneStrings> = {
 
   // ── Corporate ──────────────────────────────────────────────────────────────
   corporate: {
-    usernameLabel:    "employee github handle",
     usernameHint:     "@ prefix is a non-required input parameter",
-    stylePickerLabel: "select performance review modality:",
-    loadingText:      "processing performance review",
+    submitLabel:      "Synergize the Burn",
+    loadingText:      "processing review",
     waitingNote:      "blocked — awaiting mandatory deliverable",
 
     placeholderTitle: "output pending stakeholder input",
-    placeholderHint:  "← action the username field to unlock synergies",
+    placeholderHint:  "action the username field to unlock synergies",
     loadingTitle:     "generating cross-functional roast deliverable",
     resultLabel:      "— deliverable ready for review —",
+    exclaim:          "BOOM.",
 
     copyLabel:   "copy to clipboard",
     copiedLabel: "copied to clipboard",
@@ -70,16 +70,16 @@ const TONES: Record<RoastStyle, ToneStrings> = {
 
   // ── Shqiptarski ────────────────────────────────────────────────────────────
   shqiptarski: {
-    usernameLabel:    "emri në github",
-    usernameHint:     "pa @ — nuk e duam",
-    stylePickerLabel: "zgjidh stilin e talljeve:",
-    loadingText:      "po shkruajmë talljet",
-    waitingNote:      "po pres — fut emrin, bre",
+    usernameHint:     "pa @, s'na duhet",
+    submitLabel:      "Djege, Bre!",
+    loadingText:      "po e shkruajmë",
+    waitingNote:      "po pres — qit nji emër, mor",
 
-    placeholderTitle: "talljet do shfaqen këtu",
-    placeholderHint:  "← fut emrin, o bir",
-    loadingTitle:     "po mendojmë talljen...",
-    resultLabel:      "— i nxehtë nga zjarri —",
+    placeholderTitle: "tallja shfaqet ktu",
+    placeholderHint:  "qit nji emër, mor",
+    loadingTitle:     "po e mendojmë talljen...",
+    resultLabel:      "— qe, sapo doli —",
+    exclaim:          "booom!",
 
     copyLabel:   "kopjo talljen",
     copiedLabel: "u kopjua, bre!",
@@ -87,28 +87,28 @@ const TONES: Record<RoastStyle, ToneStrings> = {
     demoNote:    "shto ANTHROPIC_API_KEY për tallje me AI",
 
     errors: {
-      INVALID_USERNAME: "Ky emër nuk është valid, bre. Vetëm shkronja, numra dhe viza — si Kanuni, duhet rregull.",
-      USER_NOT_FOUND:   "Ky user nuk ekziston, o bir. Ke gabuar emrin — kontrollo mirë para se të vazhdosh.",
-      RATE_LIMITED:     "GitHub na ka ndalur. Shto GITHUB_TOKEN tek .env.local dhe hajde sërish, nuk dorëzohemi.",
+      INVALID_USERNAME: "Ky emër s'është i vlefshëm, bre. Vetëm shkronja, numra dhe viza — si te Kanuni, duhet rregull.",
+      USER_NOT_FOUND:   "Ky përdorues nuk ekziston, o bir. E ke gabuar emrin — kontrollo mirë para se të vazhdosh.",
+      RATE_LIMITED:     "GitHub na bllokoi përkohësisht. Shto GITHUB_TOKEN te .env.local dhe provo sërish — nuk dorëzohemi.",
       UPSTREAM_ERROR:   "Diçka shkoi keq nga ana jonë. Provo sërish — si shqiptarët, nuk dorëzohemi kurrë.",
       BAD_REQUEST:      "Kërkesa nuk ishte e saktë. Bëje sërish me kujdes, bre.",
     },
-    errorFallback: "Ka ndodhur një gabim i panjohur. Provo sërish, bre.",
+    errorFallback: "Ndodhi një gabim i panjohur. Provo sërish, bre.",
   },
 
   // ── Haiku ─────────────────────────────────────────────────────────────────
   // Error messages are themselves haikus (5-7-5).
   haiku: {
-    usernameLabel:    "a github username",
     usernameHint:     "no @ — like wind, unseen",
-    stylePickerLabel: "choose the form of your shame:",
-    loadingText:      "ink dries slowly",
+    submitLabel:      "Compose the Pain",
+    loadingText:      "ink dries",
     waitingNote:      "empty field — no bloom yet",
 
     placeholderTitle: "silence fills this page",
-    placeholderHint:  "← a name, like morning dew",
+    placeholderHint:  "a name, like morning dew",
     loadingTitle:     "thoughts gather quietly",
     resultLabel:      "— the poem arrives —",
+    exclaim:          "...oof.",
 
     copyLabel:   "carry these words",
     copiedLabel: "words carried",
@@ -127,16 +127,16 @@ const TONES: Record<RoastStyle, ToneStrings> = {
 
   // ── Gen Z ─────────────────────────────────────────────────────────────────
   "gen-z": {
-    usernameLabel:    "github username (no pressure bestie)",
     usernameHint:     "no @ needed, it's giving unnecessary",
-    stylePickerLabel: "pick ur vibe fr:",
+    submitLabel:      "Cook Them",
     loadingText:      "omg hold on",
     waitingNote:      "waiting for u to type smth",
 
     placeholderTitle: "ur roast will appear here bestie",
-    placeholderHint:  "← type a name, it's giving nothing rn",
+    placeholderHint:  "type a name, it's giving nothing rn",
     loadingTitle:     "cooking ur roast rn...",
     resultLabel:      "— just dropped —",
+    exclaim:          "DEAD 💀",
 
     copyLabel:   "copy this",
     copiedLabel: "copied bestie!",
@@ -155,16 +155,16 @@ const TONES: Record<RoastStyle, ToneStrings> = {
 
   // ── Shakespearean ─────────────────────────────────────────────────────────
   shakespearean: {
-    usernameLabel:    "thy github username",
     usernameHint:     "the @ symbol is superfluous, good sir",
-    stylePickerLabel: "choose thy mode of torment:",
-    loadingText:      "methinks the quill doth scratch",
+    submitLabel:      "Unleash the Bard",
+    loadingText:      "the quill doth scratch",
     waitingNote:      "thy input is yet wanting, good traveller",
 
     placeholderTitle: "await thee the roast, fair visitor",
-    placeholderHint:  "← enter thy username, good traveller",
+    placeholderHint:  "enter thy username, good traveller",
     loadingTitle:     "the bard doth compose thy roast",
     resultLabel:      "— the quill hath spoken —",
+    exclaim:          "FORSOOTH!",
 
     copyLabel:   "copy this proclamation",
     copiedLabel: "proclamation copied!",

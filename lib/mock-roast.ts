@@ -38,6 +38,18 @@ function notableRepo(repos: GitHubRepo[]): string {
   return repos[0]?.name ?? "unnamed-project";
 }
 
+// ─── Albanian number agreement helpers (used by the shqiptarski roast) ───
+function albStars(n: number): string {
+  return n === 1 ? "1 yll" : `${n} yje`;
+}
+function albYears(n: number): string {
+  return n === 1 ? "1 vit" : `${n} vjet`;
+}
+function albYearsAblative(n: number): string {
+  // form used after "prej" (e.g. "prej 3 vjetësh" / "prej një viti")
+  return n === 1 ? "një viti" : `${n} vjetësh`;
+}
+
 // ---------------------------------------------------------------------------
 // Style generators
 // ---------------------------------------------------------------------------
@@ -64,11 +76,11 @@ function roastShqiptarski(user: GitHubUser, repos: GitHubRepo[]): string {
   const repo = notableRepo(repos);
 
   return pick([
-    `Bre @${user.login}, ${age} vjet në GitHub dhe vetëm ${stars} yje?! Shqiptarët kanë ndërtuar shtëpi me duar bosh në male — ti s'ke mbaruar as README-në e "${repo}". ${repoCount(repos)} repo në ${lang} dhe asnjë s'ka bërë nam. Turp, o burrë. Edhe bunkerët e Enver Hoxhës kishin më shumë vizitorë.`,
+    `Valla @${user.login}, ${albYears(age)} në GitHub edhe veç ${albStars(stars)}? Ti ke kalu ma shumë kohë tu pi makiato te kafja sesa tu ba commit, mor. "${repo}" osht lan si shpia e diasporës — fillon, kurrë s'mbaron. ${repoCount(repos)} repo në ${lang} edhe njeni s'bani boom. Qaq, hajt.`,
 
-    `O bir, çfarë është kjo gjendje?! @${user.login} ka ${repoCount(repos)} repo në ${lang}, ${stars} yje gjithsej, dhe "${repo}" gjysmë i braktisur prej ${age} vjetësh. Shqipëria ka rezistuar perandori — por kodi yt s'ka rezistuar as një code review. Hajde, merr një kafe, mblidh veten, dhe fillo nga e para me nder.`,
+    `Mor @${user.login}, ${repoCount(repos)} repo edhe ${albStars(stars)} gjithsej — profili yt osht si Kombëtarja kur e hup 0:3: plot shpresë, zero gola. "${repo}" s'ka marrë update qe ${albYearsAblative(age)}; ma shpesh vjen diaspora me targa zvicerane se sa ti me ba push. ${lang} te ti osht veç dekor. Hajde mor, mos na nxin faqen.`,
 
-    `@${user.login}, besa e programerit është të commit-osh — ti e ke thyer ${age} vjet radhazi. ${stars} yje, ${repoCount(repos)} repo në ${lang}, dhe "${repo}" duket si projekt i Kanunit: shumë rregulla, zero implementim. Shqiptarët janë të fortë — por GitHub-i yt është i dobët si sinjali WiFi në Shkodër.`,
+    `@${user.login}, ${albYears(age)} tu kodu në ${lang} edhe "${repo}" osht kryevepra? Kjo osht si remix tallave që s'e ndëgjon kush. ${albStars(stars)} — ma shumë like merr nji status i kojshisë në Facebook. E nis projektin me hype si Dua Lipa, e mbaron si demo në telefon. Kyçu njëherë, mor!`,
   ]);
 }
 

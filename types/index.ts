@@ -28,8 +28,14 @@ export interface RoastRequest {
 export interface RoastResponse {
   roast: string;
   username: string;
+  /** GitHub display name (may be null); falls back to username in the UI */
+  name: string | null;
   style: RoastStyle;
   avatarUrl: string;
+  /** user.public_repos — shown as a stat on the result card */
+  publicRepos: number;
+  /** sum of stargazers across analyzed repos — shown as a stat */
+  totalStars: number;
   /** true when ANTHROPIC_API_KEY is not configured; roast is template-generated */
   isDemoMode: boolean;
 }

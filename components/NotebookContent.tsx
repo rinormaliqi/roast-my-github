@@ -1,46 +1,29 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Pencil,
-  ArrowRight,
-  Briefcase,
-  Mountain,
-  Feather,
-  Zap,
-  BookOpen,
-  AlertTriangle,
-  FileText,
-} from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import { RoastStyle, RoastResponse, ApiError } from "@/types";
-import { getTone, type ToneStrings } from "@/lib/tone";
+import { getTone } from "@/lib/tone";
 import RoastCard from "./RoastCard";
 
-// ─── Style definitions ───────────────────────────────────────
-const STYLES: {
-  value: RoastStyle;
-  label: string;
-  sublabel: string;
-  Icon: React.ElementType;
-  tilt: number;
-}[] = [
-  { value: "corporate",     label: "Corporate",     sublabel: "synergize the burn",    Icon: Briefcase, tilt: -1.0 },
-  { value: "shqiptarski",   label: "Shqiptarski",   sublabel: "dark humor, në shqip",  Icon: Mountain,  tilt:  0.8 },
-  { value: "haiku",         label: "Haiku",         sublabel: "5 · 7 · 5 of shame",   Icon: Feather,   tilt: -0.5 },
-  { value: "gen-z",         label: "Gen Z",         sublabel: "no cap, lowkey brutal", Icon: Zap,       tilt:  1.2 },
-  { value: "shakespearean", label: "Shakespearean", sublabel: "hark! thou stinketh",   Icon: BookOpen,  tilt: -0.7 },
+// ─── Style chips (text only, per the new design) ─────────────
+const STYLES: { value: RoastStyle; label: string; tilt: number }[] = [
+  { value: "corporate",     label: "Corporate",     tilt: -0.8 },
+  { value: "shqiptarski",   label: "Shqiptarski",   tilt:  0.6 },
+  { value: "haiku",         label: "Haiku",         tilt: -0.5 },
+  { value: "gen-z",         label: "Gen Z",         tilt:  0.8 },
+  { value: "shakespearean", label: "Shakespearean", tilt: -0.6 },
 ];
 
 // ─── Component ──────────────────────────────────────────────
 export default function NotebookContent() {
   const [username, setUsername] = useState("");
-  const [style,    setStyle]    = useState<RoastStyle>("gen-z");
+  const [style,    setStyle]    = useState<RoastStyle>("corporate");
   const [loading,  setLoading]  = useState(false);
   const [result,   setResult]   = useState<RoastResponse | null>(null);
   const [error,    setError]    = useState<ApiError | null>(null);
 
-  // Tone is derived from the *currently selected* style — updates instantly
-  // when the user switches modes, even before submitting.
+  // Tone of the currently selected style (drives the submit button etc.)
   const tone = getTone(style);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -67,225 +50,152 @@ export default function NotebookContent() {
     }
   }
 
-  // For the result label, derive tone from the *result's* style so the
-  // annotation stays consistent with the card even if the user switches modes.
-  const resultTone = result ? getTone(result.style) : tone;
+  const isHaikuError = error && style === "haiku";
 
   return (
-    <div className="nb-pages">
+    <>
+      {/* ════════════ FORM CARD ════════════ */}
+      <form className="form-card" onSubmit={handleSubmit}>
 
-      {/* ════════════════════════════════════
-          LEFT PAGE — form
-      ════════════════════════════════════ */}
-      <div className="nb-page-left">
-
-        {/* Hole punches */}
-        <div className="nb-holes" aria-hidden="true">
-          {[0, 1, 2].map((i) => <div key={i} className="nb-hole" />)}
+        {/* Username */}
+        <div>
+          <label htmlFor="username" className="field-label">
+            <GitHubMark />
+            Target Username
+          </label>
+          <input
+            id="username"
+            type="text"
+            value={username}
+            onChange={(e) => {
+              setUsername(e.target.value);
+              if (error?.code === "INVALID_USERNAME") setError(null);
+            }}
+            placeholder="e.g. torvalds"
+            maxLength={39}
+            autoComplete="off"
+            spellCheck={false}
+            disabled={loading}
+            className="sketch-input"
+          />
+          {!username && (
+            <span className="margin-note" style={{ marginTop: "0.3rem", display: "block", fontSize: "0.85rem" }}>
+              {tone.usernameHint}
+            </span>
+          )}
         </div>
 
-        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.6rem" }}>
+        {/* Flavor Profile */}
+        <div>
+          <span className="field-label">Flavor Profile</span>
+          <div className="flavor-grid">
+            {STYLES.map((s) => {
+              const selected = style === s.value;
+              return (
+                <button
+                  key={s.value}
+                  type="button"
+                  onClick={() => setStyle(s.value)}
+                  disabled={loading}
+                  aria-pressed={selected}
+                  className={`flavor-chip${selected ? " selected" : ""}`}
+                  style={!selected ? { transform: `rotate(${s.tilt}deg)` } : undefined}
+                >
+                  {s.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
-          {/* ── Username ── */}
-          <div>
-            <label htmlFor="username" className="field-label">
-              <ArrowRight size={14} strokeWidth={2} aria-hidden="true" />
-              {tone.usernameLabel}
-            </label>
-            <input
-              id="username"
-              type="text"
-              value={username}
-              onChange={(e) => {
-                setUsername(e.target.value);
-                if (error?.code === "INVALID_USERNAME") setError(null);
-              }}
-              placeholder="e.g. torvalds"
-              maxLength={39}
-              autoComplete="off"
-              spellCheck={false}
-              disabled={loading}
-              className="sketch-input"
-            />
-            {!username && (
-              <span
-                className="margin-note"
-                style={{ fontSize: "0.82rem", marginTop: "0.2rem", display: "block" }}
-                aria-hidden="true"
-              >
-                {tone.usernameHint}
+        {/* Submit */}
+        <button type="submit" disabled={loading || !username.trim()} className="btn-primary">
+          {loading ? (
+            <>
+              <span style={{ fontFamily: "var(--font-body)", fontSize: "1.1rem" }}>
+                {tone.loadingText}
               </span>
-            )}
-          </div>
-
-          {/* ── Style picker ── */}
-          <div>
-            <span className="section-label">{tone.stylePickerLabel}</span>
-
-            <div className="style-rows">
-              {STYLES.map((s) => {
-                const isSelected = style === s.value;
-                return (
-                  <button
-                    key={s.value}
-                    type="button"
-                    onClick={() => setStyle(s.value)}
-                    disabled={loading}
-                    className={`style-row${isSelected ? " selected" : ""}`}
-                    style={{ transform: `rotate(${s.tilt}deg)` }}
-                    aria-pressed={isSelected}
-                  >
-                    <span className="style-row-radio" aria-hidden="true" />
-
-                    <s.Icon
-                      size={16}
-                      strokeWidth={isSelected ? 2 : 1.5}
-                      aria-hidden="true"
-                      style={{ flexShrink: 0, color: "var(--ink-mid)" }}
-                    />
-
-                    <span style={{ lineHeight: 1.3 }}>
-                      <span style={{ display: "block", fontWeight: isSelected ? 700 : 400 }}>
-                        {s.label}
-                      </span>
-                      <span
-                        className="margin-note"
-                        style={{ fontSize: "0.8rem", transform: "none", display: "block", lineHeight: 1.2 }}
-                      >
-                        {s.sublabel}
-                      </span>
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* ── Submit ── */}
-          <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
-            <button
-              type="submit"
-              disabled={loading || !username.trim()}
-              className="sketch-submit"
-            >
-              {loading ? (
-                <>
-                  <span style={{ fontFamily: "var(--font-body)", fontSize: "1.05rem", fontStyle: "italic" }}>
-                    {tone.loadingText}
-                  </span>
-                  <ScribbleDots />
-                </>
-              ) : (
-                <>
-                  <Pencil size={17} strokeWidth={1.7} aria-hidden="true" />
-                  roast it
-                  <ArrowRight size={15} strokeWidth={2} aria-hidden="true" />
-                </>
-              )}
-            </button>
-
-            {!username.trim() && !loading && (
-              <span className="margin-note" aria-hidden="true" style={{ fontSize: "0.85rem" }}>
-                {tone.waitingNote}
-              </span>
-            )}
-          </div>
-
-          {/* ── Error ── */}
-          {error && (
-            <div className="sketch-error" style={{ transform: "rotate(-0.3deg)" }}>
-              <p
-                style={{
-                  display: "flex",
-                  alignItems: style === "haiku" ? "flex-start" : "center",
-                  gap: "0.4rem",
-                  margin: 0,
-                  color: "rgba(170,35,35,0.9)",
-                  fontSize: "1rem",
-                  fontFamily: "var(--font-body)",
-                  // Haiku errors contain \n — preserve line breaks
-                  whiteSpace: style === "haiku" ? "pre-line" : "normal",
-                }}
-              >
-                <AlertTriangle
-                  size={15}
-                  strokeWidth={2}
-                  aria-hidden="true"
-                  style={{ flexShrink: 0, marginTop: style === "haiku" ? "3px" : 0 }}
-                />
-                {tone.errors[error.code] ?? tone.errorFallback}
-              </p>
-            </div>
+              <ScribbleDots light />
+            </>
+          ) : (
+            tone.submitLabel
           )}
-        </form>
-      </div>
+        </button>
 
-      {/* ─── Book spine ─── */}
-      <div className="nb-spine" aria-hidden="true" />
-
-      {/* ════════════════════════════════════
-          RIGHT PAGE — result / placeholder
-      ════════════════════════════════════ */}
-      <div className={`nb-page-right${!result && !loading ? " nb-page-right--empty" : ""}`}>
-        {result ? (
-          <>
+        {/* Error */}
+        {error && (
+          <div className="sketch-error">
             <p
-              className="margin-note"
-              style={{ marginBottom: "0.6rem", display: "block", fontSize: "0.88rem", transform: "rotate(-0.6deg)" }}
+              style={{
+                display: "flex",
+                alignItems: isHaikuError ? "flex-start" : "center",
+                gap: "0.45rem",
+                margin: 0,
+                color: "rgba(170,35,35,0.92)",
+                fontSize: "1.05rem",
+                fontFamily: "var(--font-body)",
+                whiteSpace: isHaikuError ? "pre-line" : "normal",
+              }}
             >
-              {resultTone.resultLabel}
+              <AlertTriangle
+                size={16}
+                strokeWidth={2}
+                aria-hidden="true"
+                style={{ flexShrink: 0, marginTop: isHaikuError ? "4px" : 0 }}
+              />
+              {tone.errors[error.code] ?? tone.errorFallback}
             </p>
-            <RoastCard result={result} />
-          </>
-        ) : (
-          <RightPlaceholder loading={loading} tone={tone} />
+          </div>
         )}
-      </div>
-    </div>
+      </form>
+
+      {/* ════════════ RESULT ════════════ */}
+      {result ? (
+        <div>
+          <p className="result-label">{getTone(result.style).resultLabel}</p>
+          <RoastCard result={result} />
+        </div>
+      ) : (
+        <div className="placeholder">
+          {loading ? (
+            <>
+              <span style={{ color: "var(--ink-faint)" }}><ScribbleDots /></span>
+              <span className="placeholder-title">{tone.loadingTitle}</span>
+            </>
+          ) : (
+            <>
+              <span className="placeholder-title">{tone.placeholderTitle}</span>
+              <span className="placeholder-hint">{tone.placeholderHint}</span>
+            </>
+          )}
+        </div>
+      )}
+    </>
   );
 }
 
-// ─── Right-page placeholder ──────────────────────────────────
-function RightPlaceholder({ loading, tone }: { loading: boolean; tone: ToneStrings }) {
+// ─── GitHub mark (inline — lucide v1 dropped brand icons) ────
+function GitHubMark() {
   return (
-    <div className="right-placeholder">
-      <div className="placeholder-frame">
-        {loading ? (
-          <span style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.7rem" }}>
-            <ScribbleDots />
-            <span
-              className="margin-note"
-              style={{ transform: "none", fontSize: "0.9rem", color: "var(--ink-ghost)" }}
-            >
-              {tone.loadingText}
-            </span>
-          </span>
-        ) : (
-          <FileText size={36} strokeWidth={1} style={{ color: "var(--ink-ghost)" }} aria-hidden="true" />
-        )}
-      </div>
-
-      <p className="placeholder-label">
-        {loading ? tone.loadingTitle : tone.placeholderTitle}
-      </p>
-
-      {!loading && (
-        <span
-          className="margin-note"
-          style={{ fontSize: "0.82rem", transform: "rotate(-1deg)", marginTop: "-0.4rem" }}
-          aria-hidden="true"
-        >
-          {tone.placeholderHint}
-        </span>
-      )}
-    </div>
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+      style={{ flexShrink: 0 }}
+    >
+      <path d="M12 .5C5.37.5 0 5.87 0 12.5c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.21.09 1.84 1.24 1.84 1.24 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.34-5.47-5.96 0-1.32.47-2.39 1.24-3.23-.13-.3-.54-1.53.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.25 2.88.12 3.18.77.84 1.24 1.91 1.24 3.23 0 4.63-2.81 5.65-5.49 5.95.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58A12 12 0 0 0 24 12.5C24 5.87 18.63.5 12 .5z" />
+    </svg>
   );
 }
 
 // ─── Scribble dots ───────────────────────────────────────────
-function ScribbleDots() {
+function ScribbleDots({ light = false }: { light?: boolean }) {
   return (
-    <span style={{ display: "inline-flex", gap: "4px", alignItems: "center" }}>
+    <span
+      style={{ display: "inline-flex", gap: "4px", alignItems: "center", color: light ? "#fff" : "inherit" }}
+    >
       <span className="scribble-dot" />
       <span className="scribble-dot" />
       <span className="scribble-dot" />

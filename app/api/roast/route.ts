@@ -75,12 +75,16 @@ export async function POST(request: NextRequest) {
   // 5. Generate roast (with automatic AI → mock fallback)
   try {
     const { roast, isDemoMode } = await generateRoast(user, repos, style);
+    const totalStars = repos.reduce((sum, r) => sum + r.stargazers_count, 0);
 
     return NextResponse.json<RoastResponse>({
       roast,
       username: user.login,
+      name: user.name,
       style,
       avatarUrl: user.avatar_url,
+      publicRepos: user.public_repos,
+      totalStars,
       isDemoMode,
     });
   } catch (e) {

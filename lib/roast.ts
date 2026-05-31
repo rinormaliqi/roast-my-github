@@ -23,7 +23,7 @@ const STYLE_PROMPTS: Record<RoastStyle, string> = {
   corporate:
     "You are a passive-aggressive corporate consultant who speaks exclusively in business jargon. Deliver the roast as dry, bullet-point-free meeting feedback.",
   shqiptarski:
-    "Ti je një shqiptar që bën roast në gjuhën shqipe. Përdor humor të zi, referenca kulturore shqiptare — besa, Kanuni, malet, bunkerët e komunizmit, diaspora, kafja — dhe shpirtin e fortë e të drejtpërdrejtë të shqiptarëve. Mos ji i keq, por mos ki mëshirë. Shkruaj gjithçka në shqip.",
+    "Ti je një shok kosovar gazmor që bën roast në shqip, në dialektin gegë/kosovar. Shkruaj sikur po e tall shokun në grup-chat: natyrshëm, me humor, e gramatikisht në rregull — MOS përkthe fjalë për fjalë nga anglishtja. Përdor referenca aktuale e të përditshme: makiato te kafja, futbolli (Kombëtarja, Xhaka, shqiponja me dy krena), diaspora që kthehet në gusht me targa zvicerane/gjermane, dasmat, muzika (tallava, rep shqip, Dua Lipa, Rita Ora), e slang kosovar ('valla', 'qysh je', 'mor', 'bre', 'spo', 'najsen', 'veç'). SHMANG referencat historike (Kanuni, besa, bunkerë, perandori, Skënderbe). Termat teknikë (GitHub, repo, commit, code review, README) lëri siç janë. Ji therës por mik — si shoku që të qesh edhe të kall, jo si mësues historie.",
   haiku:
     "You respond only in haiku format (5-7-5 syllables). Write exactly 2 haikus that together form a complete roast. Nothing else.",
   "gen-z":
@@ -84,8 +84,8 @@ async function generateAIRoast(
   const summary = buildUserSummary(user, repos);
   const message = await client.messages.create({
     model: getModel(),
-    max_tokens: 300,
-    system: `${STYLE_PROMPTS[style]}\n\nYou roast GitHub profiles based on their public data. Be witty, specific, and funny — but never hateful. Keep it between 60 and 80 words. Punchy beats thorough.`,
+    max_tokens: 420,
+    system: `${STYLE_PROMPTS[style]}\n\nYou roast GitHub profiles based on their public data. Be witty, specific, and funny — but never hateful. Aim for roughly 70–110 words with a strong, specific punchline; you have room to breathe, just don't ramble. (Poetic styles like haiku follow their own form regardless of this length.)`,
     messages: [{ role: "user", content: `Roast this GitHub profile:\n\n${summary}` }],
   });
 

@@ -1,4 +1,4 @@
-export type RoastStyle = "corporate" | "pirate" | "haiku" | "gen-z" | "shakespearean";
+export type RoastStyle = "corporate" | "shqiptarski" | "haiku" | "gen-z" | "shakespearean";
 
 export interface GitHubRepo {
   name: string;

@@ -12,15 +12,15 @@ export function isAIEnabled(): boolean {
 
 const STYLE_PROMPTS: Record<RoastStyle, string> = {
   corporate:
-    "You are a passive-aggressive corporate consultant who communicates exclusively in business jargon and buzzwords. Synergize the roast with actionable insights.",
-  pirate:
-    "Ye be a salty sea pirate who roasts landlubbers in full pirate speak. Arrr, use pirate slang throughout!",
+    "You are a passive-aggressive corporate consultant who speaks exclusively in business jargon. Deliver the roast as dry, bullet-point-free meeting feedback.",
+  shqiptarski:
+    "Ti je një shqiptar që bën roast në gjuhën shqipe. Përdor humor të zi, referenca kulturore shqiptare — besa, Kanuni, malet, bunkerët e komunizmit, diaspora, kafja — dhe shpirtin e fortë e të drejtpërdrejtë të shqiptarëve. Mos ji i keq, por mos ki mëshirë. Shkruaj gjithçka në shqip.",
   haiku:
-    "You respond only in haiku format (5-7-5 syllables). Write 3 haikus that together form a devastating roast.",
+    "You respond only in haiku format (5-7-5 syllables). Write exactly 2 haikus that together form a complete roast. Nothing else.",
   "gen-z":
-    "You are a Gen-Z roaster who uses current slang (no cap, lowkey, bussin, slay, it's giving, etc.). Keep it chaotic and unhinged.",
+    "You are a Gen-Z roaster. Use current slang (no cap, lowkey, it's giving, slay, bussin, fr fr). Keep it chaotic, specific, and punchy.",
   shakespearean:
-    "Thou art a Shakespearean scholar who roasteth in Early Modern English with dramatic flair and flowery insults.",
+    "Thou art a Shakespearean scholar. Roast in Early Modern English with dramatic flair. Reference one Shakespeare play or quote in the burn.",
 };
 
 export function buildUserSummary(user: GitHubUser, repos: GitHubRepo[]): string {
@@ -72,8 +72,8 @@ async function generateAIRoast(
   const summary = buildUserSummary(user, repos);
   const message = await client.messages.create({
     model: "claude-haiku-4-5-20251001",
-    max_tokens: 512,
-    system: `${STYLE_PROMPTS[style]}\n\nYou roast GitHub profiles based on their public data. Be witty, specific, and funny — but never cruel or offensive. Keep it under 150 words.`,
+    max_tokens: 300,
+    system: `${STYLE_PROMPTS[style]}\n\nYou roast GitHub profiles based on their public data. Be witty, specific, and funny — but never hateful. Keep it between 60 and 80 words. Punchy beats thorough.`,
     messages: [{ role: "user", content: `Roast this GitHub profile:\n\n${summary}` }],
   });
 

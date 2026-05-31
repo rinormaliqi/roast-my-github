@@ -23,7 +23,7 @@ function validateUsername(raw: string): string | null {
 // ---------------------------------------------------------------------------
 // Valid styles
 // ---------------------------------------------------------------------------
-const VALID_STYLES = new Set(["corporate", "pirate", "haiku", "gen-z", "shakespearean"]);
+const VALID_STYLES = new Set(["corporate", "shqiptarski", "haiku", "gen-z", "shakespearean"]);
 
 // ---------------------------------------------------------------------------
 // Route handler

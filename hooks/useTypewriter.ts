@@ -29,16 +29,20 @@ export function useTypewriter(text: string): TypewriterResult {
     setDisplayed("");
     setIsDone(false);
 
+    // Split by code points (not UTF-16 units) so emoji like 💀 / 😭 aren't
+    // sliced mid-surrogate-pair, which would briefly render a broken "�".
+    const chars = Array.from(text);
+
     const TOTAL_MS = 2800;
-    const speedMs = Math.min(30, Math.max(8, TOTAL_MS / text.length));
+    const speedMs = Math.min(30, Math.max(8, TOTAL_MS / chars.length));
 
     let i = 0;
 
     const id = setInterval(() => {
       i++;
-      setDisplayed(text.slice(0, i));
+      setDisplayed(chars.slice(0, i).join(""));
 
-      if (i >= text.length) {
+      if (i >= chars.length) {
         clearInterval(id);
         setIsDone(true);
       }

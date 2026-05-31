@@ -61,6 +61,7 @@ Open **http://localhost:3000** and roast away.
 |---|---|---|
 | `ANTHROPIC_API_KEY` | Optional | Enables real Claude roasts. Without it → Demo Mode (template roasts). Get one at [console.anthropic.com](https://console.anthropic.com). |
 | `GITHUB_TOKEN` | Optional | Raises GitHub rate limit from 60 → 5,000 req/hr. Without it → unauthenticated access still works. Create at [github.com/settings/tokens](https://github.com/settings/tokens) (no scopes needed). |
+| `ANTHROPIC_MODEL` | Optional | Override the Claude model. Leave blank for the built-in default — only set it if that model snapshot has been retired. |
 
 ---
 
@@ -100,6 +101,13 @@ types/
 - **The Anthropic client is lazily imported** so the app never crashes at startup when no key is set.
 - **Layered fallback:** no key → mock roast; key present but Claude call fails → caught and falls back to mock roast (with a console warning) rather than erroring the user.
 - **`lib/tone.ts` centralizes every UI string per style**, so the form's voice changes the instant you switch modes, and the result card keeps the voice of the roast it actually displayed.
+
+---
+
+## Known limitations
+
+- **Repo fetch is capped at 100.** The roast uses a user's 100 most-recently-updated public repos (one GitHub API page). Plenty for an accurate roast; users with more repos just won't have the long tail analyzed.
+- **The typewriter is a post-hoc effect**, not real token streaming — the full roast is fetched, then "written out."
 
 ---
 

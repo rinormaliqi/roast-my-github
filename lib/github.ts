@@ -90,6 +90,16 @@ export async function fetchPublicRepos(username: string): Promise<GitHubRepo[]> 
     `${GITHUB_API}/users/${username}/repos?per_page=100&sort=updated`
   );
 
+  // Treat 404 as NOT_FOUND too. fetchGitHubUser + fetchPublicRepos run in
+  // parallel (Promise.all); without this, a nonexistent user could surface a
+  // confusing 502 if this call's rejection happens to win the race.
+  if (res.status === 404) {
+    throw new GitHubError(
+      `GitHub user "${username}" does not exist or their account is private.`,
+      "NOT_FOUND"
+    );
+  }
+
   checkRateLimit(res);
 
   if (!res.ok) {

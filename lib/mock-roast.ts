@@ -53,7 +53,7 @@ function roastCorporate(user: GitHubUser, repos: GitHubRepo[]): string {
 
     `Following a synergy deep-dive, we've identified that @${user.login}'s ${repoCount(repos)}-repo ${lang} footprint delivers suboptimal stakeholder engagement (${stars} stars, ${age} fiscal years). "${repo}" shows outside-the-box thinking, albeit still very much inside-the-box execution. Recommend an urgent ideation sprint and a paradigm pivot.`,
 
-    `Action item: @${user.login}'s core ${lang} competency is not yet market-ready. ${stars} total stars across ${repoCount(repos)} repos represents negative brand equity. "${repo}" is a bold vision — we just need someone else to build it. Let's schedule a alignment call to unpack the learnings.`,
+    `Action item: @${user.login}'s core ${lang} competency is not yet market-ready. ${stars} total stars across ${repoCount(repos)} repos represents negative brand equity. "${repo}" is a bold vision — we just need someone else to build it. Let's schedule an alignment call to unpack the learnings.`,
   ]);
 }
 

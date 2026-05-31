@@ -10,6 +10,15 @@ export function isAIEnabled(): boolean {
   return Boolean(process.env.ANTHROPIC_API_KEY?.trim());
 }
 
+/**
+ * The Claude model to use. Overridable via ANTHROPIC_MODEL so a stale default
+ * can be swapped without code changes (e.g. if this snapshot is retired).
+ */
+const DEFAULT_MODEL = "claude-haiku-4-5-20251001";
+function getModel(): string {
+  return process.env.ANTHROPIC_MODEL?.trim() || DEFAULT_MODEL;
+}
+
 const STYLE_PROMPTS: Record<RoastStyle, string> = {
   corporate:
     "You are a passive-aggressive corporate consultant who speaks exclusively in business jargon. Deliver the roast as dry, bullet-point-free meeting feedback.",
@@ -39,8 +48,11 @@ export function buildUserSummary(user: GitHubUser, repos: GitHubRepo[]): string 
 
   const totalStars = repos.reduce((sum, r) => sum + r.stargazers_count, 0);
   const repoNames = repos.slice(0, 10).map((r) => r.name);
-  const oldestRepo = repos.at(-1);
-  const allForks = repos.every((r) => r.fork);
+  // Repos are sorted by `updated` desc, so the last one is least-recently-touched.
+  const leastRecentRepo = repos.at(-1);
+  // Guard against [] — [].every() is true, which would wrongly claim a
+  // zero-repo user has "only forks".
+  const allForks = repos.length > 0 && repos.every((r) => r.fork);
 
   return `
 GitHub username: ${user.login}
@@ -52,7 +64,7 @@ Total stars: ${totalStars}
 Account created: ${new Date(user.created_at).getFullYear()}
 Top languages: ${topLangs.length ? topLangs.join(", ") : "None detected"}
 Recent repo names: ${repoNames.length ? repoNames.join(", ") : "none"}
-Oldest repo: ${oldestRepo?.name ?? "N/A"} (${oldestRepo?.language ?? "unknown language"})
+Least recently updated repo: ${leastRecentRepo?.name ?? "N/A"} (${leastRecentRepo?.language ?? "unknown language"})
 ${allForks ? "Note: all visible repos are forks — no original work found." : ""}
 `.trim();
 }
@@ -71,7 +83,7 @@ async function generateAIRoast(
 
   const summary = buildUserSummary(user, repos);
   const message = await client.messages.create({
-    model: "claude-haiku-4-5-20251001",
+    model: getModel(),
     max_tokens: 300,
     system: `${STYLE_PROMPTS[style]}\n\nYou roast GitHub profiles based on their public data. Be witty, specific, and funny — but never hateful. Keep it between 60 and 80 words. Punchy beats thorough.`,
     messages: [{ role: "user", content: `Roast this GitHub profile:\n\n${summary}` }],
